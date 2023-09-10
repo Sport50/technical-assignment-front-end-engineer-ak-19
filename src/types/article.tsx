@@ -3,5 +3,5 @@ export type Article = {
     title: string,
     body: string
     authorEmail: string
-    publicationDate: Date
+    publicationDate: string
   }
