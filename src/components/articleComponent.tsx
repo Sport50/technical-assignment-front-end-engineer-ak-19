@@ -1,4 +1,4 @@
-import React from 'react';;
+import React from 'react';
 import { Article } from '@/types/article';
 import { Card, CardContent, Grid, Typography } from '@mui/material';
 

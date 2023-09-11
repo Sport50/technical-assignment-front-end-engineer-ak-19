@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Button, Grid, TextField, Typography } from '@mui/material';
+import { Alert, Button, Grid, TextField, Typography } from '@mui/material';
 
 const NewArticle = () => {
     const [title, setTitle] = useState<string>('');
     const [body, setbody] = useState<string>('');
     const [email, setEmail] = useState<string>('');
+    const [error, setError] = useState<string>('');
     const router = useRouter();
 
-    const addNewArticle = async () => {
+    const validateOrThrowError = () => {
+        if (!title) throw 'Title is required!';
+        if (!body) throw 'Body is required!';
+        if (!email) throw 'Email is required!';
+        const emailRegex = /\S+@\S+\.\S+/;
+        if (!emailRegex.test(email)) throw 'Email is not valid!';
+    }
+
+    const postToApi = async () => {
         const response = await fetch('/api/articles', {
             method: 'POST',
             body: JSON.stringify({ title, body, authorEmail: email }),
@@ -18,7 +27,21 @@ const NewArticle = () => {
         if (response.ok) router.push('/');
     }
 
+    const addNewArticle = async () => {
+        try {
+            validateOrThrowError();
+            postToApi();
+        } catch (error: string | any) {
+            setError(error)
+        }
+    }
+
     const goBack = () => router.push('/')
+
+    const clearErrorAndset = (setFunction: Function, value: string) => {
+        setError('')
+        setFunction(value)
+    }
 
     return (
         <React.Fragment>
@@ -35,7 +58,7 @@ const NewArticle = () => {
                         fullWidth
                         autoComplete="cc-title"
                         variant="standard"
-                        value={title} onChange={(e) => setTitle(e.target.value)}
+                        value={title} onChange={(e) => clearErrorAndset(setTitle, e.target.value)}
                     />
                 </Grid>
                 <Grid item xs={12} md={12}>
@@ -48,7 +71,7 @@ const NewArticle = () => {
                         variant="standard"
                         multiline
                         value={body}
-                        onChange={(e) => setbody(e.target.value)}
+                        onChange={(e) => clearErrorAndset(setbody, e.target.value)}
                     />
                 </Grid>
                 <Grid item xs={12} md={12}>
@@ -60,7 +83,7 @@ const NewArticle = () => {
                         variant="standard"
                         autoComplete="cc-email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => clearErrorAndset(setEmail, e.target.value)}
                     />
                 </Grid>
                 <Grid item xs={12} md={12}>
@@ -69,6 +92,7 @@ const NewArticle = () => {
                     </Button>
                 </Grid>
             </Grid>
+            {error && <Alert severity="error"> {error} </Alert>}
         </React.Fragment>
     );
 };

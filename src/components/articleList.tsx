@@ -21,11 +21,11 @@ const ArticleList = () => {
   const addNewArticle = () => router.push('/new')
 
   return (
-    <div>
+    <React.Fragment>
       <Button onClick={addNewArticle}>Add new article</Button>
       <Typography variant="h4" gutterBottom> List of the articles:</Typography>
       <Grid container spacing={12}>{articles.map((article: Article) => <ArticleComponent key={article.id} article={article} />)} </Grid>
-    </div>
+    </React.Fragment>
   );
 };
 
